@@ -16,6 +16,7 @@ A lightweight chat-ops bot for Prometheus repositories, providing Prow-style com
 Approves the PR and optionally adds the `review/lgtm` label.
 - **Anyone**: Submits an approving GitHub review
 - **Collaborators**: Also adds `review/lgtm` label and removes `review/needs-review` label
+- **Note**: PR authors cannot approve their own changes
 
 Example:
 ```
@@ -82,6 +83,7 @@ When a **collaborator** approves a PR via GitHub's UI (not using `/lgtm`):
 - Automatically adds `review/lgtm` label
 - Removes `review/needs-review` label
 - Non-collaborator approvals are recorded but don't add labels
+- PR authors cannot approve their own changes (self-approvals are ignored)
 
 ### New Commits → Remove LGTM
 When new commits are pushed to a PR:
