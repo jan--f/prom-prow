@@ -1,7 +1,7 @@
 .PHONY: build test test-coverage lint clean
 
 build:
-	go build -o bin/bot ./cmd/bot
+	go build -o bot ./cmd/bot
 
 test:
 	go test -v ./...
@@ -14,7 +14,7 @@ lint:
 	golangci-lint run
 
 clean:
-	rm -rf bin/ coverage.out coverage.html
+	rm -rf bot coverage.out coverage.html
 
 docker-build:
 	docker build -t prometheus-prow-bot:latest .
