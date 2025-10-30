@@ -10,7 +10,12 @@ import (
 
 // HandleLGTM handles /lgtm and /lgtm cancel commands
 // isCollaborator determines if labels should be added/removed
-func HandleLGTM(ctx context.Context, client *github.Client, owner, repo string, prNum int, user string, cancel bool, isCollaborator bool) error {
+func HandleLGTM(ctx context.Context, client *github.Client, owner, repo string, prNum int, user, prAuthor string, cancel bool, isCollaborator bool) error {
+	// Prevent PR authors from approving their own changes
+	if user == prAuthor {
+		return fmt.Errorf("PR authors cannot approve their own changes")
+	}
+
 	if cancel {
 		return cancelLGTM(ctx, client, owner, repo, prNum, user, isCollaborator)
 	}

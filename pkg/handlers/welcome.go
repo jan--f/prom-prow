@@ -18,6 +18,7 @@ You can use the following commands in comments to interact with this PR:
 - **/lgtm** - Approve this PR
   - Anyone: Submits an approving GitHub review
   - Collaborators: Also adds the review/lgtm label
+  - Note: PR authors cannot approve their own changes
 - **/lgtm cancel** - Cancel your approval
   - Anyone: Dismisses your review
   - Collaborators: Also removes the review/lgtm label (if no other collaborators have approved)

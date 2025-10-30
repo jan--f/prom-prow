@@ -37,6 +37,13 @@ func HandleComment(ctx context.Context, client *github.Client, action *githubact
 
 	action.Infof("Processing command /%s from %s on PR #%d", cmd.Name, commenter, prNum)
 
+	// Get PR details to check author
+	pr, _, err := client.PullRequests.Get(ctx, owner, repo, prNum)
+	if err != nil {
+		return fmt.Errorf("failed to get PR: %w", err)
+	}
+	prAuthor := pr.GetUser().GetLogin()
+
 	// Check if user is a collaborator (write access)
 	isCollab, err := util.IsCollaborator(ctx, client, owner, repo, commenter)
 	if err != nil {
@@ -60,7 +67,7 @@ func HandleComment(ctx context.Context, client *github.Client, action *githubact
 	switch cmd.Name {
 	case "lgtm":
 		cancel := len(cmd.Args) > 0 && cmd.Args[0] == "cancel"
-		return commands.HandleLGTM(ctx, client, owner, repo, prNum, commenter, cancel, isCollab)
+		return commands.HandleLGTM(ctx, client, owner, repo, prNum, commenter, prAuthor, cancel, isCollab)
 
 	case "cc":
 		return commands.HandleCC(ctx, client, owner, repo, prNum, cmd.Args)

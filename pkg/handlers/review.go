@@ -21,6 +21,13 @@ func HandleReview(ctx context.Context, client *github.Client, action *githubacti
 	repo := event.GetRepo().GetName()
 	prNum := event.GetPullRequest().GetNumber()
 	reviewer := event.GetReview().GetUser().GetLogin()
+	prAuthor := event.GetPullRequest().GetUser().GetLogin()
+
+	// Prevent PR authors from approving their own changes
+	if reviewer == prAuthor {
+		action.Infof("PR #%d: ignoring self-approval from author %s", prNum, reviewer)
+		return nil
+	}
 
 	// Check if reviewer is a collaborator
 	isCollab, err := util.IsCollaborator(ctx, client, owner, repo, reviewer)
