@@ -36,7 +36,7 @@ func approveLGTM(ctx context.Context, client *github.Client, owner, repo string,
 
 	// Only collaborators can add/remove labels
 	if isCollaborator {
-		if err := util.ReplaceLabel(ctx, client, owner, repo, prNum, "review/needs-review", "review/lgtm"); err != nil {
+		if err := util.ReplaceLabel(ctx, client, owner, repo, prNum, util.LabelReviewNeedsReview, util.LabelReviewLGTM); err != nil {
 			return err
 		}
 	}
@@ -53,7 +53,7 @@ func cancelLGTM(ctx context.Context, client *github.Client, owner, repo string, 
 
 	// Find and dismiss the user's approval (anyone can dismiss their own review)
 	for _, review := range reviews {
-		if review.GetUser().GetLogin() == user && review.GetState() == "APPROVED" {
+		if review.GetUser().GetLogin() == user && review.GetState() == util.ReviewStateApprovedAPI {
 			dismissal := &github.PullRequestReviewDismissalRequest{
 				Message: github.String("LGTM cancelled"),
 			}
@@ -69,14 +69,14 @@ func cancelLGTM(ctx context.Context, client *github.Client, owner, repo string, 
 	// But only remove it if there are no remaining approvals from collaborators
 	if isCollaborator {
 		// Check if any other collaborators still have approvals
-		hasCollaboratorApproval, err := hasRemainingCollaboratorApprovals(ctx, client, owner, repo, prNum, user)
+		hasCollaboratorApproval, err := hasRemainingCollaboratorApprovals(ctx, client, owner, repo, prNum, user, reviews)
 		if err != nil {
 			return err
 		}
 
 		// Only remove label if no collaborator approvals remain
 		if !hasCollaboratorApproval {
-			if err := util.ReplaceLabel(ctx, client, owner, repo, prNum, "review/lgtm", "review/needs-review"); err != nil {
+			if err := util.ReplaceLabel(ctx, client, owner, repo, prNum, util.LabelReviewLGTM, util.LabelReviewNeedsReview); err != nil {
 				return err
 			}
 		}
@@ -87,12 +87,7 @@ func cancelLGTM(ctx context.Context, client *github.Client, owner, repo string, 
 
 // hasRemainingCollaboratorApprovals checks if there are any approved reviews from collaborators
 // excluding the specified user
-func hasRemainingCollaboratorApprovals(ctx context.Context, client *github.Client, owner, repo string, prNum int, excludeUser string) (bool, error) {
-	reviews, _, err := client.PullRequests.ListReviews(ctx, owner, repo, prNum, nil)
-	if err != nil {
-		return false, fmt.Errorf("failed to list reviews: %w", err)
-	}
-
+func hasRemainingCollaboratorApprovals(ctx context.Context, client *github.Client, owner, repo string, prNum int, excludeUser string, reviews []*github.PullRequestReview) (bool, error) {
 	// Track the latest review state for each user (excluding the user who cancelled)
 	latestReviewState := make(map[string]string)
 	for _, review := range reviews {
@@ -109,7 +104,7 @@ func hasRemainingCollaboratorApprovals(ctx context.Context, client *github.Clien
 
 	// Check if any of the remaining reviewers with APPROVED state are collaborators
 	for reviewer, state := range latestReviewState {
-		if state == "APPROVED" {
+		if state == util.ReviewStateApprovedAPI {
 			isCollab, err := util.IsCollaborator(ctx, client, owner, repo, reviewer)
 			if err != nil {
 				return false, fmt.Errorf("failed to check collaborator status for %s: %w", reviewer, err)

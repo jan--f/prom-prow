@@ -104,6 +104,7 @@ name: Prometheus Bot
 on:
   issue_comment:
     types: [created]
+    # maybe  if: ${{ startsWith(github.event.comment.body, '/') }}
   pull_request_review:
     types: [submitted]
   pull_request:

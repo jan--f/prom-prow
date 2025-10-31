@@ -23,5 +23,5 @@ func HandlePRUpdate(ctx context.Context, client *github.Client, action *githubac
 	action.Infof("PR #%d updated with new commits, removing review/lgtm label", prNum)
 
 	// Remove review/lgtm and add review/needs-review
-	return util.ReplaceLabel(ctx, client, owner, repo, prNum, "review/lgtm", "review/needs-review")
+	return util.ReplaceLabel(ctx, client, owner, repo, prNum, util.LabelReviewLGTM, util.LabelReviewNeedsReview)
 }
