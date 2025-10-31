@@ -104,6 +104,7 @@ name: Prometheus Bot
 on:
   issue_comment:
     types: [created]
+    # maybe  if: ${{ startsWith(github.event.comment.body, '/') }}
   pull_request_review:
     types: [submitted]
   pull_request:
@@ -162,27 +163,6 @@ Run Docker image:
 make docker-run
 ```
 
-## Architecture
+## Inspiration
 
-- **Language**: Go 1.21+
-- **GitHub API**: `google/go-github/v57`
-- **GitHub Actions**: `sethvargo/go-githubactions`
-- **Deployment**: Docker container via GitHub Actions
-
-## Comparison to Prow
-
-| Feature | Prom-Prow Bot | Full Prow | Prow GitHub Actions |
-|---------|---------------|-----------|---------------------|
-| Chat-ops commands | ✅ | ✅ | ✅ |
-| Welcome comment with instructions | ✅ | ✅ | ❌ |
-| OWNERS files | ❌ (uses GitHub perms) | ✅ | ⚠️ (root only) |
-| Auto review assignment | ❌ (use CODEOWNERS) | ✅ | ❌ |
-| Bidirectional /lgtm | ✅ | ❌ | ❌ |
-| Auto-remove LGTM on update | ✅ | ✅ | ✅ |
-| Infrastructure | GitHub Actions | Kubernetes cluster | GitHub Actions |
-| Setup complexity | Low | High | Medium |
-| Maintenance burden | Low | High | Low |
-
-## License
-
-Apache 2.0
+[Prow](https://docs.prow.k8s.io/) and [Prow Github Actions](https://github.com/marketplace/actions/prow-github-actions)

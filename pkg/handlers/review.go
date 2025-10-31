@@ -13,7 +13,7 @@ import (
 // Automatically adds review/lgtm label when a PR is approved via GitHub UI by a collaborator
 func HandleReview(ctx context.Context, client *github.Client, action *githubactions.Action, event *github.PullRequestReviewEvent) error {
 	// Only handle approvals
-	if event.GetReview().GetState() != "approved" {
+	if event.GetReview().GetState() != util.ReviewStateApprovedWebhook {
 		return nil
 	}
 
@@ -43,5 +43,5 @@ func HandleReview(ctx context.Context, client *github.Client, action *githubacti
 	action.Infof("PR #%d approved by %s (collaborator) via GitHub UI, adding review/lgtm label", prNum, reviewer)
 
 	// Add review/lgtm label and remove review/needs-review
-	return util.ReplaceLabel(ctx, client, owner, repo, prNum, "review/needs-review", "review/lgtm")
+	return util.ReplaceLabel(ctx, client, owner, repo, prNum, util.LabelReviewNeedsReview, util.LabelReviewLGTM)
 }
