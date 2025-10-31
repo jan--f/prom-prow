@@ -27,13 +27,12 @@ func approveLGTM(ctx context.Context, client *github.Client, owner, repo string,
 	// Submit approving review (anyone can do this)
 	review := &github.PullRequestReviewRequest{
 		Event: github.String("APPROVE"),
-		Body:  github.String("LGTM"),
+		Body:  github.String(fmt.Sprintf("Approved on behalf of %s", user)),
 	}
 
-	_, _, err := client.PullRequests.CreateReview(ctx, owner, repo, prNum, review)
-	if err != nil {
-		return fmt.Errorf("failed to create review: %w", err)
-	}
+	// Skip over any error in creating the Review. Actions require a special
+	// setting to leave reviews which might be unwanted.
+	client.PullRequests.CreateReview(ctx, owner, repo, prNum, review)
 
 	// Only collaborators can add/remove labels
 	if isCollaborator {

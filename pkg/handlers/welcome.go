@@ -10,9 +10,8 @@ import (
 
 const welcomeComment = `Thank you for your pull request!
 
-## Available Commands
-
-You can use the following commands in comments to interact with this PR:
+<details>
+<summary> You can use commands in comments to interact with this PR.</summary>
 
 ### Review Commands
 - **/lgtm** - Approve this PR
@@ -40,6 +39,7 @@ You can use the following commands in comments to interact with this PR:
 - **Collaborators** (write access) can additionally manage labels via /lgtm, use /cc, /label, /hold, and /unhold
 
 This allows community members to provide reviews while maintaining label control for maintainers.
+</details>
 
 ---
 *This is an automated message from the Prometheus Prow Bot. For issues or questions, please file an issue in the prometheus/prom-prow repository.*`
